@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kevin's Ultimate Gamified Exam Dashboard</title>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+<style>
+/* ----------------- RESET ----------------- */
+*{margin:0;padding:0;box-sizing:border-box;}
+body{font-family:'Roboto',sans-serif;background:#0f0f15;color:#eee;overflow-x:hidden;}
+a{text-decoration:none;color:inherit;}
+
+/* ----------------- HEADER ----------------- */
+header{
+  background:#1c1c2e;
+  color:#fff;
+  text-align:center;
+  padding:1.2rem;
+  font-size:2rem;
+  position:sticky;
+  top:0;
+  z-index:100;
+  box-shadow:0 3px 12px rgba(0,0,0,0.6);
+}
+#countdown{
+  margin-top:0.3rem;
+  font-size:1.2rem;
+  color:#ffcc00;
+  font-weight:700;
+  letter-spacing:0.5px;
+}
+
+/* ----------------- STATS ----------------- */
+.stats{
+  display:flex;
+  justify-content:space-around;
+  padding:1rem;
+  margin:1rem auto;
+  max-width:1000px;
+}
+.stat-box{
+  background:#222231;
+  border-radius:12px;
+  padding:1rem 1.2rem;
+  text-align:center;
+  flex:1;
+  margin:0 0.5rem;
+  box-shadow:0 4px 10px rgba(0,0,0,0.5);
+  transition:all 0.3s ease;
+}
+.stat-box:hover{transform:scale(1.05);}
+.stat-box h3{color:#ffcc00;margin-bottom:0.3rem;font-size:1.4rem;}
+
+/* ----------------- CONTAINER ----------------- */
+.container{
+  max-width:1100px;
+  margin:1rem auto;
+  padding:1rem;
+  display:flex;
+  flex-direction:column;
+  gap:1rem;
+}
+
+/* ----------------- DAY CARD ----------------- */
+.day-card{
+  background:#1f1f2f;
+  border-radius:16px;
+  overflow:hidden;
+  box-shadow:0 5px 15px rgba(0,0,0,0.6);
+  transition:transform 0.4s ease, box-shadow 0.4s ease;
+}
+.day-card:hover{transform:translateY(-6px);box-shadow:0 10px 25px rgba(0,0,0,0.7);}
+.day-header{
+  padding:1rem;
+  text-align:center;
+  font-size:1.3rem;
+  background:#27273a;
+  cursor:pointer;
+  position:relative;
+  font-weight:700;
+}
+.day-header span{
+  position:absolute;
+  right:1rem;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:1.2rem;
+}
+
+/* ----------------- TASKS ----------------- */
+.tasks{
+  display:flex;
+  flex-direction:column;
+  gap:0.6rem;
+  padding:1rem;
+}
+.task{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  padding:0.6rem 1rem;
+  border-radius:12px;
+  cursor:pointer;
+  font-weight:500;
+  transition:all 0.3s ease;
+}
+.task span{flex:1;}
+.task.completed{opacity:0.6;text-decoration:line-through;}
+.task button{
+  border:none;
+  background:#ffcc00;
+  color:#121212;
+  padding:0.4rem 0.8rem;
+  border-radius:6px;
+  cursor:pointer;
+  transition:0.3s;
+}
+.task button:hover{background:#ffd633;}
+
+/* ----------------- SUBJECT COLORS ----------------- */
+.TPDE{background:#ff4d6d;color:#121212;}
+.DEM{background:#ff944d;color:#121212;}
+.EDA{background:#fffb6b;color:#121212;}
+.KDM{background:#42ff99;color:#121212;}
+.MT{background:#4da6ff;color:#121212;}
+.UHV{background:#bb99ff;color:#121212;}
+.GYM{background:#aaaaaa;color:#121212;}
+
+/* ----------------- PROGRESS ----------------- */
+.progress-bar{
+  width:100%;
+  background:#333;
+  height:14px;
+  border-radius:12px;
+  margin-top:0.5rem;
+  overflow:hidden;
+}
+.progress{
+  height:100%;
+  background:#ffcc00;
+  width:0%;
+  transition:width 0.5s ease;
+}
+
+/* ----------------- MODAL / FLASHCARD ----------------- */
+.modal{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.9);
+  display:none;
+  justify-content:center;
+  align-items:center;
+  z-index:200;
+}
+.modal-content{
+  background:#1f1f2f;
+  padding:2rem;
+  border-radius:18px;
+  max-width:500px;
+  width:90%;
+  text-align:center;
+  position:relative;
+  box-shadow:0 5px 20px rgba(0,0,0,0.7);
+}
+.modal-content h3{margin-bottom:1rem;}
+.modal-content button{
+  margin-top:1rem;
+  background:#ffcc00;
+  color:#121212;
+  border:none;
+  padding:0.6rem 1.2rem;
+  border-radius:12px;
+  cursor:pointer;
+}
+
+/* ----------------- CONFETTI ----------------- */
+#confetti-canvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  pointer-events:none;
+  z-index:300;
+}
+
+/* ----------------- RESPONSIVE ----------------- */
+@media(max-width:700px){
+  .task{flex-direction:column;align-items:flex-start;}
+  .task button{margin-top:0.3rem;}
+  .stats{flex-direction:column;gap:0.8rem;}
+}
+</style>
+</head>
+<body>
+
+<header>
+Kevin's Gamified Exam Dashboard
+<div id="countdown">Loading countdown...</div>
+</header>
+
+<div class="stats">
+  <div class="stat-box"><h3 id="points">0</h3>Points</div>
+  <div class="stat-box"><h3 id="streak">0</h3>Streak</div>
+  <div class="stat-box"><h3 id="dayProgress">0%</h3>Day Progress</div>
+</div>
+
+<div class="container" id="daysContainer">
+  <!-- Day cards will be generated dynamically -->
+</div>
+
+<div class="modal" id="flashcardModal">
+  <div class="modal-content">
+    <h3>Flashcard / Mini Quiz</h3>
+    <p id="flashcardText">Placeholder flashcard</p>
+    <button onclick="closeFlashcard()">Close</button>
+  </div>
+</div>
+
+<canvas id="confetti-canvas"></canvas>
+
+<script>
+// ---------- JS will go here (tasks, progress, countdown, confetti, gamification) ----------
+</script>
+
+</body>
+</html>
